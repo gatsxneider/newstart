@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}홈 - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="glass-card profile-card">
+    <div class="profile-header">
+        <div class="profile-image-container">
+            <img src="{{ url_for('static', filename='uploads/' + profile.photo_filename) if profile.photo_filename else url_for('static', filename='images/default_profile.png') }}" alt="프로필 사진" class="profile-img" id="profileImgPreview">
+            
+            {% if session.get('admin_id') %}
+            <!-- 첫 화면 사진 업로드 폼 (관리자 로그인 시 노출) -->
+            <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="hidden" name="name" value="{{ profile.name }}">
+                <input type="hidden" name="title" value="{{ profile.title }}">
+                <input type="hidden" name="bio" value="{{ profile.bio }}">
+                <label for="photo" class="upload-btn">사진 변경</label>
+                <input type="file" name="photo" id="photo" accept="image/*" style="display:none;" onchange="this.form.submit()">
+            </form>
+            {% else %}
+            <p class="text-small text-muted" style="text-align: center; margin-top: 10px;">(사진을 변경하려면 로그인하세요)</p>
+            {% endif %}
+        </div>
+        
+        <div class="profile-info">
+            <h1 class="profile-name">{{ profile.name }}</h1>
+            <h2 class="profile-title">{{ profile.title }}</h2>
+            <p class="profile-bio">{{ profile.bio }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="content-grid">
+    <div class="glass-card section-card">
+        <h3><i class="icon">💼</i> 경력 이력</h3>
+        <ul class="timeline">
+            {% for career in careers %}
+            <li class="timeline-item">
+                <div class="timeline-date">{{ career.start_date }} ~ {{ career.end_date or '현재' }}</div>
+                <div class="timeline-content">
+                    <h4>{{ career.company }}</h4>
+                    <span class="role">{{ career.role }}</span>
+                    <p>{{ career.description }}</p>
+                </div>
+            </li>
+            {% else %}
+            <p class="empty-msg">등록된 경력이 없습니다.</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="glass-card section-card">
+        <h3><i class="icon">📜</i> 자격증 보유 이력</h3>
+        <ul class="cert-list">
+            {% for cert in certificates %}
+            <li class="cert-item">
+                <div class="cert-name">{{ cert.name }}</div>
+                <div class="cert-meta">{{ cert.issuer }} | {{ cert.date }}</div>
+            </li>
+            {% else %}
+            <p class="empty-msg">등록된 자격증이 없습니다.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

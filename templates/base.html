@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}정보시스템 수석감리원 포트폴리오{% endblock %}</title>
+    <!-- 구글 폰트 적용 (자연 친화적이고 깔끔한 폰트) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.21/vanta.clouds.min.js"></script>
+</head>
+<body>
+    <div id="vanta-bg"></div> <!-- 3D 자연 배경 (구름) 영역 -->
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="nav-logo">감리원 포트폴리오</a>
+            <div class="nav-links">
+                {% if session.get('admin_id') %}
+                    <a href="{{ url_for('admin_dashboard') }}">관리자 대시보드</a>
+                    <a href="{{ url_for('auth.logout') }}">로그아웃</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">관리자 로그인</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-2">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/three_bg.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

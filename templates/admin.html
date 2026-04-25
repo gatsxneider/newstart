@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}관리자 대시보드 - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h2 class="section-title">관리자 대시보드</h2>
+
+    <div class="glass-card admin-section">
+        <h3>프로필 편집</h3>
+        <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                <label>이름</label>
+                <input type="text" name="name" value="{{ profile.name }}" required>
+            </div>
+            <div class="form-group">
+                <label>타이틀</label>
+                <input type="text" name="title" value="{{ profile.title }}" required>
+            </div>
+            <div class="form-group">
+                <label>소개(Bio)</label>
+                <textarea name="bio" rows="3">{{ profile.bio }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>프로필 사진 변경 (선택)</label>
+                <input type="file" name="photo" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">프로필 저장</button>
+        </form>
+    </div>
+
+    <div class="admin-grid">
+        <div class="glass-card admin-section">
+            <h3>새 경력 추가</h3>
+            <form action="{{ url_for('add_career') }}" method="POST" class="admin-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label>회사/기관명</label>
+                    <input type="text" name="company" required>
+                </div>
+                <div class="form-group">
+                    <label>역할/직급</label>
+                    <input type="text" name="role" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>시작일 (예: 2020.03)</label>
+                        <input type="text" name="start_date" required>
+                    </div>
+                    <div class="form-group half">
+                        <label>종료일 (비워두면 '현재')</label>
+                        <input type="text" name="end_date">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>상세 설명</label>
+                    <textarea name="description" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">경력 추가</button>
+            </form>
+            
+            <hr>
+            <h4>등록된 경력 목록</h4>
+            <ul class="admin-list">
+                {% for career in careers %}
+                <li>
+                    <span>{{ career.company }} - {{ career.role }}</span>
+                    <form action="{{ url_for('delete_career', id=career.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('삭제하시겠습니까?');">삭제</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="glass-card admin-section">
+            <h3>새 자격증 추가</h3>
+            <form action="{{ url_for('add_certificate') }}" method="POST" class="admin-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-group">
+                    <label>자격증명</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>발급기관</label>
+                    <input type="text" name="issuer" required>
+                </div>
+                <div class="form-group">
+                    <label>취득일 (예: 2021.11)</label>
+                    <input type="text" name="date" required>
+                </div>
+                <button type="submit" class="btn btn-success">자격증 추가</button>
+            </form>
+
+            <hr>
+            <h4>등록된 자격증 목록</h4>
+            <ul class="admin-list">
+                {% for cert in certificates %}
+                <li>
+                    <span>{{ cert.name }} ({{ cert.issuer }})</span>
+                    <form action="{{ url_for('delete_certificate', id=cert.id) }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('삭제하시겠습니까?');">삭제</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
